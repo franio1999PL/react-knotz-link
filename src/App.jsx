@@ -1,6 +1,6 @@
 import react, { useState, useEffect } from 'react'
 import axios from 'axios'
-import Content from './content'
+
 
 const App = () => {
   const [data, setData] = useState([])
@@ -34,9 +34,6 @@ const App = () => {
         </center>
       </header>
       <main className='flex'>
-        {/* {data.map(item => (
-          <Content data={item} key={item.item_id} />
-        ))} */}
 
         <ul className='flex flex-wrap px-8 my-16 gap-6 justify-center'>
           {status ? (
