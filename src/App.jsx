@@ -10,8 +10,7 @@ const App = () => {
   const [status, setStatus] = useState(false)
 
   useEffect(() => {
-    // setTimeout(() => {
-    axios
+    const unsub = axios
       .get(url)
       .then(res => {
         setData(res.data)
@@ -20,7 +19,10 @@ const App = () => {
       .catch(err => {
         console.log(err)
       })
-    // }, 5000)
+    
+    return () => {
+      unsub.remove()
+    }
   }, [])
 
   data.map(content => console.log(content))
