@@ -5,7 +5,7 @@ import axios from 'axios'
 const App = () => {
   const [data, setData] = useState([])
   const [url, setUrl] = useState(
-    'https://getpocket-knotz-link-api.onrender.com/'
+    'https://api.superapi.pl'
   )
   const [status, setStatus] = useState(false)
 
