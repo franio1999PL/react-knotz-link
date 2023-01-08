@@ -6,7 +6,7 @@ import { HiX, HiFire } from 'react-icons/hi'
 
 const App = () => {
   const [data, setData] = useState([])
-  const [url, setUrl] = useState('http://localhost:3001')
+  const [url, setUrl] = useState('https://api.superapi.pl')
   const [status, setStatus] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [countOfItems, setCountOfItems] = useState(1000)
@@ -40,14 +40,14 @@ const App = () => {
   }
 
   const resetCategory = () => {
-    setUrl('http://localhost:3001')
+    setUrl('https://api.superapi.pl')
     setIsMenuOpen(false)
   }
 
   useEffect(() => {
     const changeUrl = () => {
       setUrl(
-        `http://localhost:3001/categories?tag=${category}&count=${countOfItems}`
+        `https://api.superapi.pl/categories?tag=${category}&count=${countOfItems}`
       )
     }
 
