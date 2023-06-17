@@ -1,36 +1,45 @@
-import react, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
-import Categories from './Categories'
-import { Tablica } from './kategorie'
-import { HiX, HiFire } from 'react-icons/hi'
+import { HiX, HiFire, HiArrowLeft, HiArrowRight } from 'react-icons/hi'
 
 const App = () => {
   const [data, setData] = useState([])
   const [url, setUrl] = useState('https://api.blady.dev/data')
   const [status, setStatus] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [countOfItems, setCountOfItems] = useState(1000)
+  const [page, setPage] = useState(1)
   const [category, setCategory] = useState('')
+  const [categories, setCategories] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
     setStatus(false)
-  const getData = url => {
-  axios
-    .get(url, {
-      headers: {
-        'api-key': 'F1R2A3N4E5K' // Ustawienie nagłówka 'api-key'
-      }
-    })
-    .then(res => {
-      setData(res.data);
-      setStatus(true);
-    })
-    .catch(err => {
-      console.log(err);
-    });
-};
+    const getData = url => {
+      axios
+        .get(url, {
+          headers: {
+            'api-key': 'F1R2A3N4E5K' // Ustawienie nagłówka 'api-key'
+          }
+        })
+        .then(res => {
+          setData(res.data.data)
+          setTotalPages(res.data.totalPages) // Ustawienie liczby stron
+          setStatus(true)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
 
-getData(url);
+    const getDataCat = () => {
+      axios.get('https://api.blady.dev/tags').then(res => {
+        setCategories(res.data.tagPool)
+      })
+    }
+    getDataCat()
+
+    getData(url)
   }, [url])
 
   const CloseMenuHandler = () => {
@@ -39,25 +48,39 @@ getData(url);
 
   const ChangeCategory = name => {
     let formattedName = name.replace(/ /g, '+')
-    setCategory(formattedName)
-    // console.log(category)
+    setCategory(name)
+    setCurrentPage(1)
     setIsMenuOpen(false)
   }
 
   const resetCategory = () => {
-    setUrl('https://api.superapi.pl')
+    setCategory('')
+    setCurrentPage(1)
+    setUrl(
+      `https://api.blady.dev/data?${category && 'tag=' + category}&page=${
+        currentPage || 1
+      }`
+    )
     setIsMenuOpen(false)
+  }
+
+  const changePage = newPage => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage)
+    }
   }
 
   useEffect(() => {
     const changeUrl = () => {
       setUrl(
-        `https://api.superapi.pl/categories?tag=${category}&count=${countOfItems}`
+        `https://api.blady.dev/data?${category && 'tag=' + category}&page=${
+          currentPage || 1
+        }`
       )
     }
 
     changeUrl()
-  }, [category])
+  }, [category, currentPage])
 
   return (
     <div className='bg-[#212121fa] text-white uppercase font-bold w-screen h-full'>
@@ -78,10 +101,10 @@ getData(url);
               >
                 Wszystkie Kategorie |
               </li>
-              {Tablica.map((cat, i) => (
+              {categories.map((cat, i) => (
                 <li
                   className='hover:underline cursor-pointer selection:bg-inherit'
-                  key={i}
+                  key={cat.id}
                   onClick={() => ChangeCategory(cat)}
                 >
                   {cat} |
@@ -103,6 +126,9 @@ getData(url);
           <center>
             <h1 className='text-4xl p-4'>Knotz.Link</h1>
           </center>
+          <p className='text-white text-2xl text-center m-12'>
+            {!category === '' ? 'Kategoria:' : ''} {category}
+          </p>
         </header>
         <main className='flex'>
           <div className='flex flex-wrap px-8 my-16 gap-6 justify-center'>
@@ -142,7 +168,7 @@ getData(url);
                             </p>
                           </span>
                           <span>
-                            {word_count && word_count != '0' ? (
+                            {word_count && word_count !== '0' ? (
                               <p>{word_count} słów</p>
                             ) : (
                               ''
@@ -155,17 +181,13 @@ getData(url);
                               ''
                             )}
                           </span>
-                          {/* <span>
-                      Tags:
-                      {tags.map(tag =>
-                        tag.map(({ item_id, tag }) => (
-                          <p key={item_id}>{tag}</p>
-                        ))
-                      )}
-                    </span> */}
                         </div>
                         <span className='absolute right-0 bottom-0'>
-                          <a href={url} target='_blank'>
+                          <a
+                            href={url}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                          >
                             <button className='bg-red-600 px-8 py-3 shadow-lg rounded-br-lg text-slate-200 hover:text-white hover:bg-red-500'>
                               Czytaj
                             </button>
@@ -183,6 +205,26 @@ getData(url);
             )}
           </div>
         </main>
+        <section>
+          <div className='flex justify-center items-center gap-4 m-12 '>
+            <button
+              onClick={() => changePage(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              <HiArrowLeft className='text-2xl cursor-pointer hover:opacity-70' />
+            </button>
+            <span className='bg-red-600 text-black p-4 rounded-full'>
+              Strona {currentPage} z {totalPages}
+            </span>
+            <button
+              onClick={() => changePage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className='hover:underline'
+            >
+              <HiArrowRight className='text-2xl cursor-pointer hover:opacity-70' />
+            </button>
+          </div>
+        </section>
         <footer>
           <center>
             <h1>Knotz.link</h1>
