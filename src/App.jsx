@@ -6,7 +6,7 @@ import { HiX, HiFire } from 'react-icons/hi'
 
 const App = () => {
   const [data, setData] = useState([])
-  const [url, setUrl] = useState('https://api.superapi.pl')
+  const [url, setUrl] = useState('https://api.blady.dev/data')
   const [status, setStatus] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [countOfItems, setCountOfItems] = useState(1000)
@@ -14,18 +14,23 @@ const App = () => {
 
   useEffect(() => {
     setStatus(false)
-    const getData = url => {
-      axios
-        .get(url)
-        .then(res => {
-          setData(res.data)
-          setStatus(true)
-        })
-        .catch(err => {
-          console.log(err)
-        })
-    }
-    getData(url)
+  const getData = url => {
+  axios
+    .get(url, {
+      headers: {
+        'api-key': 'F1R2A3N4E5K' // Ustawienie nagłówka 'api-key'
+      }
+    })
+    .then(res => {
+      setData(res.data);
+      setStatus(true);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
+
+getData(url);
   }, [url])
 
   const CloseMenuHandler = () => {
